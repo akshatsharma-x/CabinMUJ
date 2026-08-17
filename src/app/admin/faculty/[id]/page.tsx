@@ -91,12 +91,12 @@ export default function FacultyForm({ params }: { params: Promise<{ id: string }
 
   return (
     <div className="container max-w-4xl py-8 mb-16">
-      <div className="mb-4 text-sm font-semibold text-gray-500 flex items-center gap-2">
-         <Link href="/admin" className="hover:text-muj-orange">Admin Dashboard</Link>
+      <div className="flex items-center gap-2 text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
+         <Link href="/admin">Admin</Link>
          <span>/</span>
-         <Link href="/admin/faculty" className="hover:text-muj-orange">Faculty Management</Link>
+         <Link href="/admin/faculty">Faculty</Link>
          <span>/</span>
-         <span>{isAddMode ? 'Add New' : 'Edit Faculty'}</span>
+         <span style={{ color: 'var(--text-primary)' }}>{isAddMode ? 'Add New' : 'Edit'}</span>
       </div>
 
       <div className="flex justify-between items-center mb-8">
@@ -162,7 +162,7 @@ export default function FacultyForm({ params }: { params: Promise<{ id: string }
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-muj-orange">Cabin Number *</label>
-              <input required type="text" className="input bg-gray-50 border p-3 rounded border-muj-orange" placeholder="e.g. 305" value={formData.cabinNumber} onChange={e => setFormData({...formData, cabinNumber: e.target.value})} />
+              <input required type="text" className="input" placeholder="e.g. 305" value={formData.cabinNumber} onChange={e => setFormData({...formData, cabinNumber: e.target.value})} style={{ borderColor: 'var(--muj-orange)' }} />
             </div>
           </div>
         </div>
@@ -181,7 +181,7 @@ export default function FacultyForm({ params }: { params: Promise<{ id: string }
             </div>
             <div className="flex flex-col gap-2 md:col-span-2">
               <label className="text-sm font-semibold">Biography</label>
-              <textarea className="input bg-gray-50 border p-3 rounded h-32" value={formData.bio} onChange={e => setFormData({...formData, bio: e.target.value})} />
+              <textarea className="input" style={{ height: '8rem' }} value={formData.bio} onChange={e => setFormData({...formData, bio: e.target.value})} />
             </div>
             <div className="flex flex-col gap-2 md:col-span-2">
               <label className="text-sm font-semibold">Photo URL</label>
