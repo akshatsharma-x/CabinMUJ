@@ -9,16 +9,16 @@ export default function FacultyProfile({ params }: { params: Promise<{ id: strin
   const resolvedParams = use(params);
   const { facultyList } = useFaculty();
   const faculty = facultyList.find(f => f.id === resolvedParams.id);
-  
+
   const [copiedCabin, setCopiedCabin] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
 
   if (!faculty) {
     return (
       <AppShell>
-        <div className="container py-20 text-center animate-fade-in">
-          <h1 className="h2 font-bold mb-4">Faculty Not Found</h1>
-          <p className="text-gray-500 mb-8">The faculty member you are looking for does not exist or has been removed.</p>
+        <div className="container py-20 text-center">
+          <h1 className="h2 mb-4">Faculty Not Found</h1>
+          <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>The requested faculty member could not be found.</p>
           <Link href="/faculty" className="btn btn-primary">Return to Directory</Link>
         </div>
       </AppShell>
@@ -27,15 +27,15 @@ export default function FacultyProfile({ params }: { params: Promise<{ id: strin
 
   const initials = faculty.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
-  const handleCopyCabin = () => {
+  const copyLocation = () => {
     if (faculty.block && faculty.cabinNumber) {
-      navigator.clipboard.writeText(`${faculty.block} - ${faculty.cabinNumber}`);
+      navigator.clipboard.writeText(`${faculty.block} - Cabin ${faculty.cabinNumber}`);
       setCopiedCabin(true);
       setTimeout(() => setCopiedCabin(false), 2000);
     }
   };
 
-  const handleCopyEmail = () => {
+  const copyEmail = () => {
     if (faculty.email) {
       navigator.clipboard.writeText(faculty.email);
       setCopiedEmail(true);
@@ -45,179 +45,206 @@ export default function FacultyProfile({ params }: { params: Promise<{ id: strin
 
   return (
     <AppShell>
-      <div className="container py-8 max-w-5xl">
-        
-        <div className="mb-6 text-sm font-semibold text-gray-500 flex items-center gap-2 animate-fade-in">
-           <Link href="/" className="hover:text-muj-orange transition-colors">Home</Link>
-           <span>/</span>
-           <Link href="/faculty" className="hover:text-muj-orange transition-colors">Faculty Directory</Link>
-           <span>/</span>
-           <span style={{ color: 'var(--text-primary)' }}>{faculty.name}</span>
+      <div className="container py-8" style={{ maxWidth: '960px' }}>
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
+          <Link href="/" className="transition-colors" style={{ color: 'var(--text-muted)' }}>Home</Link>
+          <span>/</span>
+          <Link href="/faculty" className="transition-colors" style={{ color: 'var(--text-muted)' }}>Faculty</Link>
+          <span>/</span>
+          <span style={{ color: 'var(--text-primary)' }}>{faculty.name}</span>
         </div>
 
-        {/* Profile Header */}
-        <div className="card p-8 mb-8 flex flex-col md:flex-row gap-8 items-center md:items-start animate-fade-in delay-100">
-          <div className="flex-shrink-0 relative">
-            <div className="overflow-hidden rounded-full shadow-lg" style={{ width: '150px', height: '150px', backgroundColor: 'var(--bg-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '4px solid var(--bg-surface)' }}>
-              {faculty.photo ? (
-                 <img src={faculty.photo} alt={faculty.name} className="w-full h-full" style={{ objectFit: 'cover' }} />
-              ) : (
-                 <span className="font-bold text-gray-400 text-4xl">{initials}</span>
-              )}
+        {/* Profile Header Card */}
+        <div className="card p-6 mb-6 animate-fade-in">
+          <div className="flex flex-col md:flex-row gap-6 items-start">
+            {/* Avatar */}
+            <div className="relative">
+              <div style={{
+                width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden',
+                background: 'var(--bg-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+              }}>
+                {faculty.photo ? (
+                  <img src={faculty.photo} alt={faculty.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <span style={{ fontWeight: 700, color: 'var(--text-muted)', fontSize: '1.5rem' }}>{initials}</span>
+                )}
+              </div>
             </div>
-            {faculty.isHOD && (
-              <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-muj-orange text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-md border-2 border-white whitespace-nowrap">
-                HOD
+
+            {/* Info */}
+            <div className="flex-1">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <h1 className="h2">{faculty.name}</h1>
+                {faculty.isHOD && <span className="badge badge-orange">HOD</span>}
+                <span className="badge badge-blue">{faculty.facultyCategory}</span>
+              </div>
+              <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{faculty.designation}</p>
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{faculty.department}</p>
+
+              {/* Actions */}
+              <div className="flex flex-wrap gap-2 mt-4">
+                {faculty.block && faculty.cabinNumber && (
+                  <button onClick={copyLocation}
+                    className={`btn btn-sm ${copiedCabin ? 'badge-green' : 'btn-primary'}`}
+                    style={{ borderRadius: '6px' }}>
+                    {copiedCabin ? '✓ Copied Location' : '📍 Find Their Cabin'}
+                  </button>
+                )}
+                {faculty.email && (
+                  <button onClick={copyEmail}
+                    className={`btn btn-sm ${copiedEmail ? 'badge-green' : 'btn-secondary'}`}
+                    style={{ borderRadius: '6px' }}>
+                    {copiedEmail ? '✓ Email Copied' : '✉️ Copy Email'}
+                  </button>
+                )}
+                <Link href={`/report?facultyId=${faculty.id}`} className="btn btn-sm btn-ghost" style={{ borderRadius: '6px', color: '#DC2626' }}>
+                  Report Update
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left: Details */}
+          <div className="lg:col-span-2 flex flex-col gap-6 animate-fade-in delay-100">
+            {/* Qualifications & Research */}
+            {(faculty.qualifications.length > 0 || faculty.researchAreas.length > 0) && (
+              <div className="card p-6">
+                <h2 className="h4 mb-4">Qualifications & Research</h2>
+                {faculty.qualifications.length > 0 && (
+                  <div className="mb-4">
+                    <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-muted)' }}>Education</p>
+                    <div className="flex flex-wrap gap-2">
+                      {faculty.qualifications.map((q, i) => (
+                        <span key={i} className="badge badge-gray">{q}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {faculty.researchAreas.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-muted)' }}>Research Areas</p>
+                    <div className="flex flex-wrap gap-2">
+                      {faculty.researchAreas.map((r, i) => (
+                        <span key={i} className="badge badge-blue">{r}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
-          </div>
-          
-          <div className="flex-1 text-center md:text-left">
-             <div className="flex flex-col md:flex-row gap-2 md:items-center justify-between mb-2">
-               <h1 className="h1 font-bold">{faculty.name}</h1>
-               <span className="badge badge-orange self-center md:self-auto text-sm py-1.5 px-4 shadow-sm">{faculty.facultyCategory}</span>
-             </div>
-             <p className="text-xl font-semibold mb-2" style={{ color: 'var(--muj-orange)' }}>{faculty.designation}</p>
-             <p className="text-lg text-gray-500 mb-6">{faculty.department}</p>
-             
-             <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-               {faculty.email && (
-                 <button onClick={handleCopyEmail} className={`btn ${copiedEmail ? 'bg-green-100 text-green-700 border-green-200' : 'btn-secondary'} transition-all flex gap-2 items-center shadow-sm`}>
-                   <span>{copiedEmail ? '✓ Copied' : '✉️ Copy Email'}</span>
-                 </button>
-               )}
-               <button className="btn btn-secondary shadow-sm">➕ Add to Favorites</button>
-               <Link href={`/report?facultyId=${faculty.id}`} className="btn text-red-600 border border-red-200 bg-red-50 hover:bg-red-100 shadow-sm transition-colors">
-                 Report Update
-               </Link>
-             </div>
-          </div>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* Main Content Area */}
-          <div className="lg:col-span-2 flex flex-col gap-8 animate-fade-in delay-200">
-            {faculty.bio && (
-              <section className="card p-8">
-                <h2 className="h3 font-bold mb-4 flex items-center gap-2">
-                  <span className="text-xl">👤</span> About
-                </h2>
-                <p className="text-gray-600 leading-relaxed text-lg">{faculty.bio}</p>
-              </section>
-            )}
-
-            {faculty.subjects && faculty.subjects.length > 0 && (
-              <section className="card p-8">
-                <h2 className="h3 font-bold mb-4 flex items-center gap-2">
-                  <span className="text-xl">📚</span> Subjects Taught
-                </h2>
+            {/* Subjects */}
+            {faculty.subjects.length > 0 && (
+              <div className="card p-6">
+                <h2 className="h4 mb-4">Subjects Taught</h2>
                 <div className="flex flex-wrap gap-2">
-                  {faculty.subjects.map((sub, idx) => (
-                    <span key={idx} className="badge" style={{ backgroundColor: 'var(--bg-subtle)', color: 'var(--text-primary)', padding: '0.5rem 1rem', fontSize: '0.875rem' }}>{sub}</span>
+                  {faculty.subjects.map((s, i) => (
+                    <span key={i} className="badge badge-orange">{s}</span>
                   ))}
                 </div>
-              </section>
+              </div>
             )}
 
-            {faculty.researchAreas && faculty.researchAreas.length > 0 && (
-              <section className="card p-8">
-                <h2 className="h3 font-bold mb-4 flex items-center gap-2">
-                  <span className="text-xl">🔬</span> Research Areas
-                </h2>
-                <ul className="list-disc pl-5 space-y-2 text-gray-600">
-                  {faculty.researchAreas.map((area, idx) => (
-                    <li key={idx} className="text-lg">{area}</li>
-                  ))}
-                </ul>
-              </section>
-            )}
-            
-            {faculty.qualifications && faculty.qualifications.length > 0 && (
-              <section className="card p-8">
-                <h2 className="h3 font-bold mb-4 flex items-center gap-2">
-                  <span className="text-xl">🎓</span> Qualifications
-                </h2>
-                <ul className="list-disc pl-5 space-y-2 text-gray-600">
-                  {faculty.qualifications.map((qual, idx) => (
-                    <li key={idx} className="text-lg">{qual}</li>
-                  ))}
-                </ul>
-              </section>
-            )}
-          </div>
-
-          {/* Sidebar Area */}
-          <div className="flex flex-col gap-6 animate-fade-in delay-300">
-            
-            {/* The Highly Visible Location Card */}
-            <div className="card shadow-lg relative overflow-hidden" style={{ borderTop: '6px solid var(--muj-orange)' }}>
-               {/* Decorative background element */}
-               <div className="absolute top-0 right-0 opacity-5 w-32 h-32 -mr-8 -mt-8 rounded-full" style={{ backgroundColor: 'var(--muj-orange)' }}></div>
-               
-               <div className="p-6 border-b" style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-surface)' }}>
-                 <h2 className="h3 font-bold flex items-center gap-2">
-                   <span className="text-muj-orange text-2xl">📍</span> Location
-                 </h2>
-               </div>
-               
-               <div className="p-8 flex flex-col items-center justify-center text-center relative" style={{ backgroundColor: 'var(--muj-orange-light)', minHeight: '200px' }}>
-                 {faculty.block && faculty.cabinNumber ? (
-                   <>
-                     <span className="text-sm font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--muj-orange)' }}>
-                       BLOCK {faculty.block}
-                     </span>
-                     <span className="font-black tracking-tighter" style={{ fontSize: '4.5rem', lineHeight: '1', color: 'var(--muj-orange)' }}>
-                       {faculty.cabinNumber}
-                     </span>
-                     {faculty.floor && (
-                        <span className="mt-4 font-semibold text-lg" style={{ color: 'var(--muj-orange)', opacity: 0.9 }}>
-                          {faculty.floor}
-                        </span>
-                     )}
-                   </>
-                 ) : (
-                    <span className="text-lg font-semibold" style={{ color: 'var(--muj-orange)', opacity: 0.7 }}>
-                       Location Unassigned
-                    </span>
-                 )}
-               </div>
-               
-               {faculty.block && faculty.cabinNumber && (
-                 <div className="p-4" style={{ backgroundColor: 'var(--bg-surface)' }}>
-                   <button 
-                     onClick={handleCopyCabin}
-                     className={`w-full py-3 rounded-md font-bold transition-all flex justify-center items-center gap-2 ${copiedCabin ? 'bg-green-500 text-white shadow-md' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'}`}
-                   >
-                     {copiedCabin ? '✓ Copied to Clipboard' : 'Copy Location'}
-                   </button>
-                 </div>
-               )}
-            </div>
-
-            {faculty.officeHours && faculty.officeHours.length > 0 && (
+            {/* Office Hours */}
+            {faculty.officeHours.length > 0 && (
               <div className="card p-6">
-                <h3 className="font-bold mb-4 uppercase tracking-wider text-sm text-gray-500 flex items-center gap-2">
-                  <span className="text-lg">🕒</span> Office Hours
-                </h3>
-                <div className="flex flex-col gap-3">
-                  {faculty.officeHours.map((hours, idx) => (
-                    <div key={idx} className="p-3 rounded border font-medium text-center" style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}>
-                      {hours}
+                <h2 className="h4 mb-4">Office Hours & Availability</h2>
+                <div className="flex flex-col gap-2">
+                  {faculty.officeHours.map((h, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 rounded" style={{ background: 'var(--bg-subtle)' }}>
+                      <span className="badge badge-green">Available</span>
+                      <span className="text-sm">{h}</span>
                     </div>
                   ))}
                 </div>
               </div>
             )}
-            
-            {/* Meta Info */}
-            <div className="text-xs text-center text-gray-400 mt-4">
-              <p>Faculty ID: {faculty.id}</p>
-              <p>Last Updated: {faculty.lastUpdated || 'Recently'}</p>
-            </div>
 
+            {/* Contact */}
+            <div className="card p-6">
+              <h2 className="h4 mb-4">Contact Channels</h2>
+              <div className="flex flex-col gap-3">
+                {faculty.email && (
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Email</p>
+                      <p className="text-sm">{faculty.email}</p>
+                    </div>
+                    <button onClick={copyEmail} className="btn btn-sm btn-secondary" style={{ borderRadius: '6px' }}>
+                      {copiedEmail ? '✓' : 'Copy'}
+                    </button>
+                  </div>
+                )}
+                {faculty.phone && (
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Phone</p>
+                    <p className="text-sm">{faculty.phone}</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
+          {/* Right Sidebar: Location */}
+          <div className="flex flex-col gap-6 animate-fade-in delay-200">
+            {/* Cabin Location Card */}
+            <div className="card" style={{ borderTop: '3px solid var(--muj-orange)' }}>
+              <div className="p-4 border-b">
+                <h3 className="h4 flex items-center gap-2">
+                  <span className="text-muj-orange">📍</span> Cabin Location
+                </h3>
+              </div>
+              <div className="p-6 text-center" style={{ background: 'var(--bg-subtle)' }}>
+                {faculty.block && faculty.cabinNumber ? (
+                  <div className="flex flex-col gap-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="card p-4" style={{ background: 'var(--bg-surface)' }}>
+                        <p className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Block</p>
+                        <p className="text-xl font-bold text-muj-orange">{faculty.block}</p>
+                      </div>
+                      <div className="card p-4" style={{ background: 'var(--bg-surface)' }}>
+                        <p className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Cabin</p>
+                        <p className="text-xl font-bold">{faculty.cabinNumber}</p>
+                      </div>
+                    </div>
+                    {faculty.floor && (
+                      <div className="card p-3" style={{ background: 'var(--bg-surface)' }}>
+                        <p className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--text-muted)' }}>Floor</p>
+                        <p className="text-sm font-medium">{faculty.floor}</p>
+                      </div>
+                    )}
+                    <button onClick={copyLocation}
+                      className={`btn w-full ${copiedCabin ? 'badge-green' : 'btn-primary'}`}
+                      style={{ borderRadius: '8px', padding: '0.625rem' }}>
+                      {copiedCabin ? '✓ Copied to Clipboard' : 'Navigate to Cabin'}
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-sm py-4" style={{ color: 'var(--text-muted)' }}>Location not assigned yet</p>
+                )}
+              </div>
+            </div>
+
+            {/* Status Card */}
+            <div className="card p-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>Status</h3>
+              <div className="flex items-center gap-2">
+                <span className={`badge ${faculty.status === 'Available' ? 'badge-green' : faculty.status === 'Busy' ? 'badge-red' : 'badge-yellow'}`}>
+                  {faculty.status}
+                </span>
+              </div>
+            </div>
+
+            {/* Meta */}
+            <div className="text-xs text-center" style={{ color: 'var(--text-muted)' }}>
+              <p>Faculty ID: {faculty.id}</p>
+              {faculty.lastUpdated && <p>Last Updated: {faculty.lastUpdated}</p>}
+            </div>
+          </div>
         </div>
       </div>
     </AppShell>

@@ -11,75 +11,97 @@ export default function AdminFacultyList() {
   const filtered = facultyList.filter(f => f.name.toLowerCase().includes(search.toLowerCase()) || f.department.toLowerCase().includes(search.toLowerCase()));
 
   const handleDelete = (id: string, name: string) => {
-    if (confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) {
+    if (confirm(`Delete ${name}? This cannot be undone.`)) {
       deleteFaculty(id);
     }
   };
 
   return (
     <div className="container py-8">
-      <div className="mb-4 text-sm font-semibold text-gray-500 flex items-center gap-2">
-         <Link href="/admin" className="hover:text-muj-orange">Admin Dashboard</Link>
-         <span>/</span>
-         <span>Faculty Management</span>
+      <div className="flex items-center gap-2 text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
+        <Link href="/admin">Admin</Link>
+        <span>/</span>
+        <span style={{ color: 'var(--text-primary)' }}>Faculty Management</span>
       </div>
-      
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <h1 className="h2 font-bold">Faculty Management</h1>
-        <Link href="/admin/faculty/add" className="btn btn-primary">
-          + Add New Faculty
+
+      <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
+        <h1 className="h2">Faculty Management</h1>
+        <Link href="/admin/faculty/add" className="btn btn-primary" style={{ borderRadius: '8px' }}>
+          + Add Faculty
         </Link>
       </div>
 
-      <div className="card p-6">
-        <div className="mb-6">
-          <input 
-            type="text" 
-            placeholder="Search faculty by name or department..." 
-            className="input p-3 border rounded w-full max-w-md bg-gray-50"
+      <div className="card animate-fade-in">
+        <div className="p-4 border-b">
+          <input
+            type="text"
+            placeholder="Search by name or department..."
+            className="input"
+            style={{ maxWidth: '400px' }}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div style={{ overflowX: 'auto' }}>
+          <table>
             <thead>
-              <tr className="border-b text-sm text-gray-500 tracking-wider">
-                <th className="pb-3 px-4 font-semibold uppercase">Name</th>
-                <th className="pb-3 px-4 font-semibold uppercase">Department</th>
-                <th className="pb-3 px-4 font-semibold uppercase">Location</th>
-                <th className="pb-3 px-4 font-semibold uppercase text-right">Actions</th>
+              <tr>
+                <th>Faculty</th>
+                <th>Department</th>
+                <th>Location</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filtered.map(faculty => (
-                <tr key={faculty.id} className="border-b hover-bg-subtle transition-colors">
-                  <td className="py-4 px-4 font-medium">
-                    {faculty.name} {faculty.isHOD && <span className="ml-2 text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">HOD</span>}
+                <tr key={faculty.id}>
+                  <td>
+                    <div className="flex items-center gap-3">
+                      <div style={{
+                        width: '32px', height: '32px', borderRadius: '50%', overflow: 'hidden',
+                        background: 'var(--bg-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                      }}>
+                        {faculty.photo ? (
+                          <img src={faculty.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                          <span style={{ fontSize: '0.625rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+                            {faculty.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                          </span>
+                        )}
+                      </div>
+                      <div>
+                        <span className="font-medium">{faculty.name}</span>
+                        {faculty.isHOD && <span className="badge badge-orange ml-2">HOD</span>}
+                      </div>
+                    </div>
                   </td>
-                  <td className="py-4 px-4 text-gray-600">{faculty.department}</td>
-                  <td className="py-4 px-4">
+                  <td style={{ color: 'var(--text-secondary)' }}>{faculty.department}</td>
+                  <td>
                     {faculty.block && faculty.cabinNumber ? (
-                      <span className="font-semibold text-muj-orange">{faculty.block} - {faculty.cabinNumber}</span>
+                      <div className="flex gap-1">
+                        <span className="location-badge" style={{ fontSize: '0.625rem' }}>{faculty.block}</span>
+                        <span className="location-badge-outline" style={{ fontSize: '0.625rem' }}>{faculty.cabinNumber}</span>
+                      </div>
                     ) : (
-                      <span className="text-gray-400 italic">Not set</span>
+                      <span className="badge badge-gray">Not set</span>
                     )}
                   </td>
-                  <td className="py-4 px-4 flex justify-end gap-3">
-                    <Link href={`/admin/faculty/${faculty.id}`} className="text-blue-600 hover:underline font-semibold text-sm">
-                      Edit
-                    </Link>
-                    <button onClick={() => handleDelete(faculty.id, faculty.name)} className="text-red-600 hover:underline font-semibold text-sm">
-                      Delete
-                    </button>
+                  <td style={{ textAlign: 'right' }}>
+                    <div className="flex justify-end gap-2">
+                      <Link href={`/admin/faculty/${faculty.id}`} className="btn btn-sm btn-secondary" style={{ borderRadius: '6px' }}>
+                        Edit
+                      </Link>
+                      <button onClick={() => handleDelete(faculty.id, faculty.name)}
+                        className="btn btn-sm" style={{ color: '#DC2626', background: '#FEE2E2', border: 'none', borderRadius: '6px' }}>
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="py-8 text-center text-gray-500">No faculty found.</td>
-                </tr>
+                <tr><td colSpan={4} className="text-center py-8" style={{ color: 'var(--text-muted)' }}>No faculty found.</td></tr>
               )}
             </tbody>
           </table>

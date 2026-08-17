@@ -13,14 +13,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     // eslint-disable-next-line
     setIsClient(true);
     const auth = sessionStorage.getItem('adminAuth');
-    if (auth === 'true') {
-      setIsAuthenticated(true);
-    }
+    if (auth === 'true') setIsAuthenticated(true);
   }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (pin === 'admin123') { // Simple mock auth
+    if (pin === 'admin123') {
       setIsAuthenticated(true);
       sessionStorage.setItem('adminAuth', 'true');
       setError('');
@@ -29,54 +27,53 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   };
 
-  // Prevent hydration mismatch by returning null until client loads
   if (!isClient) return null;
 
   if (!isAuthenticated) {
     return (
       <AppShell>
-        <div className="container max-w-md py-20">
-          <div className="card p-8 text-center">
-             <div className="text-5xl mb-4">🔒</div>
-             <h1 className="h3 font-bold mb-2">Admin Access Required</h1>
-             <p className="text-gray-500 mb-6 text-sm">Please enter the registrar PIN to access the management portal.</p>
-             
-             <form onSubmit={handleLogin} className="flex flex-col gap-4">
-               <input 
-                 type="password" 
-                 placeholder="Enter PIN" 
-                 className="input p-3 bg-gray-50 border rounded text-center text-xl tracking-widest"
-                 value={pin}
-                 onChange={e => setPin(e.target.value)}
-                 autoFocus
-               />
-               {error && <p className="text-red-500 text-sm font-semibold">{error}</p>}
-               <button type="submit" className="btn btn-primary p-3">Unlock</button>
-             </form>
+        <div className="container py-20" style={{ maxWidth: '400px' }}>
+          <div className="card p-8 text-center animate-fade-in">
+            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🔒</div>
+            <h1 className="h3 mb-1">Admin Access</h1>
+            <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>Enter registrar PIN to continue.</p>
+            <form onSubmit={handleLogin} className="flex flex-col gap-3">
+              <input
+                type="password"
+                placeholder="Enter PIN"
+                className="input text-center text-xl"
+                style={{ letterSpacing: '0.2em', padding: '0.75rem' }}
+                value={pin}
+                onChange={e => setPin(e.target.value)}
+                autoFocus
+              />
+              {error && <p className="text-sm" style={{ color: '#DC2626' }}>{error}</p>}
+              <button type="submit" className="btn btn-primary" style={{ padding: '0.75rem', borderRadius: '8px' }}>Unlock</button>
+            </form>
           </div>
         </div>
       </AppShell>
     );
   }
 
-  // Once authenticated, show the admin children wrapped in the shell but with an Admin specific top nav marker
   return (
     <AppShell>
-      <div className="bg-slate-900 text-white p-2 text-center text-sm font-semibold tracking-wider flex justify-between px-6">
-        <span>⚙️ CABINMUJ ADMIN PORTAL</span>
-        <button 
-          onClick={() => {
-            sessionStorage.removeItem('adminAuth');
-            setIsAuthenticated(false);
-          }} 
-          className="text-gray-300 hover:text-white"
-        >
-          Logout
-        </button>
+      {/* Admin Bar */}
+      <div style={{
+        background: 'var(--muj-orange)', color: '#fff', padding: '0.5rem 0',
+        fontSize: '0.75rem', fontWeight: 600
+      }}>
+        <div className="container flex justify-between items-center">
+          <span>⚙️ CABINMUJ ADMIN PORTAL</span>
+          <button
+            onClick={() => { sessionStorage.removeItem('adminAuth'); setIsAuthenticated(false); }}
+            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.8)', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 500 }}
+          >
+            Logout
+          </button>
+        </div>
       </div>
-      <div className="pt-6">
-        {children}
-      </div>
+      {children}
     </AppShell>
   );
 }
