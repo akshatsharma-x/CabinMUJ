@@ -4,9 +4,10 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { AppShell } from '@/components/layout/AppShell';
 import { Input } from '@/components/ui/Input';
-import { mockFaculty } from '@/lib/mock-data';
+import { useFaculty } from '@/lib/FacultyContext';
 
 export default function Home() {
+  const { facultyList: mockFaculty } = useFaculty();
   const [searchQuery, setSearchQuery] = useState('');
   
   const quickResults = useMemo(() => {
@@ -15,7 +16,7 @@ export default function Home() {
       f.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
       (f.cabinNumber && f.cabinNumber.toLowerCase().includes(searchQuery.toLowerCase()))
     ).slice(0, 3); // limit to 3 for quick search
-  }, [searchQuery]);
+  }, [searchQuery, mockFaculty]);
 
   return (
     <AppShell>
@@ -53,7 +54,7 @@ export default function Home() {
                 {quickResults.length > 0 ? (
                   <div className="flex flex-col">
                     {quickResults.map(faculty => (
-                      <div key={faculty.id} className="flex justify-between items-center p-4 border-b hover:bg-gray-50" style={{ borderColor: 'var(--border-color)', transition: 'background 0.2s' }}>
+                      <div key={faculty.id} className="flex justify-between items-center p-4 border-b hover-bg-subtle" style={{ borderColor: 'var(--border-color)', transition: 'background 0.2s' }}>
                         <div className="flex items-center gap-3">
                           <div className="overflow-hidden rounded-full" style={{ width: '40px', height: '40px', backgroundColor: 'var(--bg-subtle)', flexShrink: 0 }}>
                             {faculty.photo ? <img src={faculty.photo} alt={faculty.name} className="w-full h-full object-cover" /> : null}

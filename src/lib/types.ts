@@ -19,6 +19,7 @@ export interface Faculty {
   bio: string;
   status: FacultyStatus;
   lastUpdated: string;
+  isHOD?: boolean;
 }
 
 export interface Department {

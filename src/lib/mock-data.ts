@@ -30,27 +30,27 @@ export const mockFaculty: Faculty[] = [
   {
     id: 'fac-003', name: 'Dr. Ramesh Kumar', photo: 'https://i.pravatar.cc/150?img=15', designation: 'Professor & HOD',
     department: 'Computer Science and Engineering', facultyCategory: 'Regular', block: 'AB2', cabinNumber: '401', floor: '4th Floor',
-    email: 'ramesh.kumar@muj.manipal.edu', phone: '', officeHours: [], subjects: [], researchAreas: [], qualifications: [], bio: '', status: 'On Leave', lastUpdated: ''
+    email: 'ramesh.kumar@muj.manipal.edu', phone: '', officeHours: [], subjects: [], researchAreas: [], qualifications: [], bio: '', status: 'On Leave', lastUpdated: '', isHOD: true
   },
   {
     id: 'fac-004', name: 'Dr. Sunita Sharma', designation: 'Professor & HOD', // Missing photo
     department: 'Information Technology', facultyCategory: 'Regular', block: 'AB1', cabinNumber: '205', floor: '2nd Floor',
-    officeHours: [], subjects: [], researchAreas: [], qualifications: [], bio: '', status: 'Available', lastUpdated: ''
+    officeHours: [], subjects: [], researchAreas: [], qualifications: [], bio: '', status: 'Available', lastUpdated: '', isHOD: true
   },
   {
     id: 'fac-005', name: 'Dr. Vivek Singh', photo: 'https://i.pravatar.cc/150?img=12', designation: 'Professor & HOD',
     department: 'Electronics and Communication', facultyCategory: 'Regular', block: 'AB2', cabinNumber: '102', floor: '1st Floor',
-    email: 'vivek.singh@muj.manipal.edu', officeHours: [], subjects: [], researchAreas: [], qualifications: [], bio: '', status: 'Available', lastUpdated: ''
+    email: 'vivek.singh@muj.manipal.edu', officeHours: [], subjects: [], researchAreas: [], qualifications: [], bio: '', status: 'Available', lastUpdated: '', isHOD: true
   },
   {
     id: 'fac-006', name: 'Prof. Anil Gupta', photo: 'https://i.pravatar.cc/150?img=8', designation: 'Professor & HOD',
     department: 'Mechanical Engineering', facultyCategory: 'Regular', block: 'AB3', cabinNumber: '015', floor: 'Ground Floor',
-    email: 'anil.gupta@muj.manipal.edu', officeHours: [], subjects: [], researchAreas: [], qualifications: [], bio: '', status: 'Available', lastUpdated: ''
+    email: 'anil.gupta@muj.manipal.edu', officeHours: [], subjects: [], researchAreas: [], qualifications: [], bio: '', status: 'Available', lastUpdated: '', isHOD: true
   },
   {
     id: 'fac-007', name: 'Dr. Meera Desai', designation: 'Professor & HOD', // Missing photo
     department: 'Civil Engineering', facultyCategory: 'Regular', block: 'AB3', cabinNumber: '110', floor: '1st Floor',
-    officeHours: [], subjects: [], researchAreas: [], qualifications: [], bio: '', status: 'Busy', lastUpdated: ''
+    officeHours: [], subjects: [], researchAreas: [], qualifications: [], bio: '', status: 'Busy', lastUpdated: '', isHOD: true
   },
   {
     id: 'fac-008', name: 'Dr. Rohan Verma', photo: 'https://i.pravatar.cc/150?img=33', designation: 'Assistant Professor',

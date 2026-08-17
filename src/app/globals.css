@@ -24,6 +24,20 @@
     --radius-xl: 1rem;
     --radius-2xl: 1.5rem;
   }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-primary: #111827;
+      --bg-surface: #1F2937;
+      --bg-subtle: #374151;
+      
+      --text-primary: #F9FAFB;
+      --text-secondary: #D1D5DB;
+      --text-muted: #9CA3AF;
+      
+      --border-color: #374151;
+    }
+  }
 }
 
 * {
@@ -220,3 +234,35 @@ body {
   white-space: nowrap;
 }
 
+.hover-bg-subtle:hover {
+  background-color: var(--bg-subtle);
+}
+
+/* Mobile Layout Ordering */
+@media (max-width: 1023px) {
+  .order-first-mobile {
+    order: -1;
+  }
+}
+
+/* Sticky Sidebar */
+@media (min-width: 1024px) {
+  .lg\:sticky {
+    position: sticky;
+    top: 2rem;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.delay-100 { animation-delay: 100ms; opacity: 0; }
+.delay-200 { animation-delay: 200ms; opacity: 0; }
+.delay-300 { animation-delay: 300ms; opacity: 0; }
