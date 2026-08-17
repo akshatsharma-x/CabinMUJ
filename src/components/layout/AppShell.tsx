@@ -20,13 +20,22 @@ export function AppShell({ children }: AppShellProps) {
               {/* Brand */}
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <div style={{
-                    background: 'linear-gradient(135deg, var(--muj-orange), #F59E0B)',
-                    width: '24px', height: '24px', borderRadius: '4px',
+                  <div className="logo-container" style={{
+                    background: '#E8612D',
+                    width: '28px', height: '28px', borderRadius: '8px',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: 'white', fontWeight: 700, fontSize: '11px'
-                  }}>C</div>
-                  <span className="font-bold" style={{ color: '#fff', fontSize: '0.9375rem' }}>CabinMUJ</span>
+                    color: 'white',
+                    flexShrink: 0,
+                    boxShadow: '0 2px 8px rgba(232, 97, 45, 0.25)'
+                  }}>
+                    <svg className="logo-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle className="logo-dot" cx="8.5" cy="8.5" r="1.5" />
+                      <path className="logo-path" d="M 13.5 8.5 A 5 5 0 1 0 6 12.5 C 6 16.5 8 19.5 12 19.5" />
+                      <path className="logo-house" d="M 14.5 19.5 L 14.5 14.5 L 17.5 11.5 L 20.5 14.5 L 20.5 19.5 Z" />
+                      <path className="logo-door" d="M 16.5 19.5 L 16.5 17 A 1 1 0 0 1 18.5 17 L 18.5 19.5" />
+                    </svg>
+                  </div>
+                  <span className="font-extrabold tracking-tight" style={{ color: '#fff', fontSize: '1.125rem' }}>Cabin<span style={{ color: '#E8612D' }}>MUJ</span></span>
                 </div>
                 <p style={{ fontSize: '0.8125rem', lineHeight: '1.5', maxWidth: '260px' }}>
                   Navigate campus and find faculty cabins at Manipal University Jaipur instantly.
