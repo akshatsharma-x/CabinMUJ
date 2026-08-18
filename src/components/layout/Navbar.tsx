@@ -38,13 +38,11 @@ export function Navbar() {
             boxShadow: '0 2px 8px rgba(232, 97, 45, 0.25)'
           }}>
             <svg className="logo-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle className="logo-dot" cx="8.5" cy="8.5" r="1.5" />
-              <path className="logo-path" d="M 13.5 8.5 A 5 5 0 1 0 6 12.5 C 6 16.5 8 19.5 12 19.5" />
-              <path className="logo-house" d="M 14.5 19.5 L 14.5 14.5 L 17.5 11.5 L 20.5 14.5 L 20.5 19.5 Z" />
-              <path className="logo-door" d="M 16.5 19.5 L 16.5 17 A 1 1 0 0 1 18.5 17 L 18.5 19.5" />
+              <path className="logo-path" d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+              <path className="logo-house" d="M9 10.5L12 7.5L15 10.5V13.5H9V10.5Z" />
             </svg>
           </div>
-          <span className="font-extrabold tracking-tight" style={{ fontSize: '1.5rem', color: '#1F2937' }}>Cabin<span style={{ color: '#E8612D' }}>MUJ</span></span>
+          <span className="font-black tracking-tight" style={{ fontSize: '1.5rem', color: '#1F2937' }}>Cabin<span style={{ color: '#E8612D' }}>MUJ</span></span>
         </Link>
 
         {/* Desktop Nav & Actions */}
@@ -111,7 +109,7 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <div style={{ borderTop: '1px solid var(--border-color)', marginTop: '0.5rem', paddingTop: '1rem', display: 'flex', flexDirection: 'col', gap: '1rem' }}>
+            <div style={{ borderTop: '1px solid var(--border-color)', marginTop: '0.5rem', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div className="flex items-center gap-2 px-3 py-2 rounded-full w-full" style={{ background: 'var(--bg-muted)', border: '1px solid var(--border-color)' }}>
                 <span style={{ color: 'var(--text-muted)' }}>🔍</span>
                 <input type="text" placeholder="Search faculty..." className="bg-transparent border-none outline-none text-sm w-full" />

@@ -4,17 +4,10 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AppShell } from '@/components/layout/AppShell';
+import { HeroSearch } from '@/components/home/HeroSearch';
 
 export default function Home() {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/faculty?search=${encodeURIComponent(searchQuery)}`);
-    }
-  };
 
   return (
     <AppShell>
@@ -67,32 +60,49 @@ export default function Home() {
             <div className="relative w-full h-[500px] rounded-3xl flex items-center justify-center animate-fade-in" style={{ background: '#FAFAFA' }}>
               <img src="/campus-building.png" alt="Campus Building" style={{ width: '80%', height: 'auto', objectFit: 'contain' }} />
               
+              {/* Flying Birds over the dome */}
+              <div className="bird-container bird-1">
+                <svg className="bird-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B5563" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M2 12s4-4 10-2c6-2 10 2 10 2" />
+                </svg>
+              </div>
+              <div className="bird-container bird-2">
+                <svg className="bird-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M2 12s4-4 10-2c6-2 10 2 10 2" />
+                </svg>
+              </div>
+              <div className="bird-container bird-3">
+                <svg className="bird-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M2 12s4-4 10-2c6-2 10 2 10 2" />
+                </svg>
+              </div>
+
               {/* Floating Avatars (Mockup like screenshot) */}
-              <div className="absolute" style={{ top: '15%', left: '10%', background: 'white', padding: '0.5rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+              <div className="absolute animate-float-card" style={{ zIndex: 30, top: '15%', left: '10%', background: 'white', padding: '0.5rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                 <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>👨‍🏫</div>
                 <div>
                   <p className="text-[10px] font-bold text-gray-800">Dr. Arjun Singh</p>
                   <p className="text-[8px] font-bold text-gray-500 flex items-center gap-1"><span style={{color: 'var(--muj-orange)'}}>📍</span> AB2-305 (CS)</p>
                 </div>
-                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', marginLeft: '4px' }}></div>
+                <div className="animate-pulse-ring" style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', marginLeft: '4px' }}></div>
               </div>
 
-              <div className="absolute" style={{ bottom: '25%', left: '15%', background: 'white', padding: '0.5rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+              <div className="absolute animate-float-card float-delay-1" style={{ zIndex: 30, bottom: '25%', left: '15%', background: 'white', padding: '0.5rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                 <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>👨‍🦳</div>
                 <div>
                   <p className="text-[10px] font-bold text-gray-800">Dr. VK Kapoor</p>
                   <p className="text-[8px] font-bold text-gray-500 flex items-center gap-1"><span style={{color: 'var(--muj-orange)'}}>📍</span> FOM-210</p>
                 </div>
-                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', marginLeft: '4px' }}></div>
+                <div className="animate-pulse-ring" style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', marginLeft: '4px' }}></div>
               </div>
 
-              <div className="absolute" style={{ top: '40%', right: '5%', background: 'white', padding: '0.5rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+              <div className="absolute animate-float-card float-delay-2" style={{ zIndex: 30, top: '40%', right: '5%', background: 'white', padding: '0.5rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                 <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>👩‍🏫</div>
                 <div>
                   <p className="text-[10px] font-bold text-gray-800">Dr. Priya Sharma</p>
                   <p className="text-[8px] font-bold text-gray-500 flex items-center gap-1"><span style={{color: 'var(--muj-orange)'}}>📍</span> AB1-102 (ECE)</p>
                 </div>
-                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', marginLeft: '4px' }}></div>
+                <div className="animate-pulse-ring" style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', marginLeft: '4px' }}></div>
               </div>
             </div>
 
@@ -101,33 +111,9 @@ export default function Home() {
       </section>
 
       {/* Big Search Section */}
-      <section style={{ padding: '5rem 0', background: 'var(--bg-muted)', borderTop: '1px solid var(--border-light)' }}>
-        <div className="container max-w-[800px] mx-auto text-center px-4">
-          <form onSubmit={handleSearch} className="relative flex items-center bg-white rounded-full p-2" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid var(--border-color)' }}>
-            <span className="text-gray-400 pl-4">🔍</span>
-            <input
-              type="text"
-              placeholder="Type a faculty name, department, or cabin number..."
-              className="flex-1 bg-transparent border-none outline-none px-4 text-gray-700"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ fontSize: '1rem' }}
-            />
-            <button type="submit" className="font-bold transition-colors hover:opacity-90" style={{
-              background: 'var(--muj-orange)', color: 'white', padding: '0.75rem 2rem', borderRadius: '999px', fontSize: '0.875rem'
-            }}>
-              Search
-            </button>
-          </form>
-
-          <div className="mt-4 text-sm font-medium text-gray-400">
-            Popular searches: 
-            <Link href="/faculty?search=Computer%20Science" className="text-muj-orange hover:underline ml-2">Computer Science HoD</Link>
-            <span className="mx-2">•</span>
-            <Link href="/faculty?search=AB2" className="text-muj-orange hover:underline">AB2 Faculty</Link>
-            <span className="mx-2">•</span>
-            <Link href="/faculty?search=Arjun" className="text-muj-orange hover:underline">Dr. Arjun Singh</Link>
-          </div>
+      <section style={{ position: 'relative', overflow: 'hidden', width: '100%', display: 'flex', justifyContent: 'center', padding: '5rem 0 8rem', background: 'linear-gradient(180deg, #FAFAFA 0%, #F3F4F6 100%)' }}>
+        <div style={{ width: '100%', position: 'relative', zIndex: 10, padding: '0 1rem' }}>
+          <HeroSearch />
         </div>
       </section>
 

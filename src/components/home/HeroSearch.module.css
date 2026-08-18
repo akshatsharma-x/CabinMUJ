@@ -1,0 +1,397 @@
+.searchPanel {
+  background: #FFFFFF;
+  border-radius: 30px;
+  border: 1px solid rgba(226, 232, 240, 0.7);
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+  padding: 28px 40px 24px;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  font-family: var(--font-inter), sans-serif;
+}
+
+.searchInputWrapper {
+  height: 76px;
+  width: 100%;
+  border: 2px solid #FAD8CC;
+  border-radius: 30px;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  position: relative;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.searchInputWrapper:focus-within {
+  border-color: #F97316;
+  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.1);
+}
+
+.searchIconContainer {
+  width: 60px;
+  height: 60px;
+  border-radius: 19px;
+  background: linear-gradient(135deg, #F97316, #EA4D1B);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0 24px;
+  font-family: inherit;
+  font-size: 20px;
+  font-weight: 400;
+  color: #1F2937;
+  appearance: none;
+}
+.searchInput::placeholder {
+  color: #6B7280;
+}
+
+.shortcutBadge {
+  background: #F8FAFC;
+  border-radius: 10px;
+  padding: 7px 11px;
+  color: #9CA3AF;
+  font-size: 14px;
+  font-weight: 600;
+  margin-right: 16px;
+  white-space: nowrap;
+}
+
+.searchButton {
+  width: 160px;
+  height: 60px;
+  border-radius: 24px;
+  border: none;
+  background: linear-gradient(135deg, #F97316, #EA4D1B);
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(234, 77, 27, 0.20);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
+  appearance: none;
+}
+.searchButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(234, 77, 27, 0.25);
+}
+.searchButton:active {
+  transform: scale(0.98);
+}
+
+.filterRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 30px;
+}
+
+.filterPill {
+  height: 62px;
+  padding: 0 22px;
+  border: 1px solid #E9EDF2;
+  border-radius: 21px;
+  background: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(15,23,42,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  appearance: none;
+  position: relative;
+}
+.filterPill:hover, .filterPillActive {
+  border-color: #F97316;
+}
+.filterPill svg {
+  flex-shrink: 0;
+}
+.filterPillText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hodControl {
+  height: 62px;
+  padding: 0 22px;
+  border: 1px solid #E9EDF2;
+  border-radius: 21px;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #374151;
+  width: 205px;
+}
+
+.toggleSwitch {
+  width: 44px;
+  height: 25px;
+  border-radius: 25px;
+  background: #E5E7EB;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-left: auto;
+  border: none;
+  appearance: none;
+}
+.toggleSwitchOn {
+  background: #F97316;
+}
+.toggleKnob {
+  width: 21px;
+  height: 21px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.toggleSwitchOn .toggleKnob {
+  transform: translateX(19px);
+}
+
+.filtersButton {
+  width: 135px;
+  height: 62px;
+  border-radius: 21px;
+  background: #FFF5F0;
+  border: none;
+  color: #EA5A20;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin-left: auto; /* Push to right on desktop */
+  appearance: none;
+}
+.filtersButton:hover {
+  background: #FFEBE3;
+}
+
+.divider {
+  margin-top: 26px;
+  border-top: 1px solid #F0F1F3;
+  width: 100%;
+}
+
+.popularRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.popularLabel {
+  font-size: 16px;
+  font-weight: 600;
+  color: #6B7280;
+  margin-right: 8px;
+}
+
+.popularChip {
+  background: #FFF3ED;
+  color: #C94F1C;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  appearance: none;
+  white-space: nowrap;
+}
+.popularChip:hover {
+  background: #FFEBE3;
+  transform: translateY(-1px);
+}
+
+.clearAllBtn {
+  margin-left: auto;
+  color: #EA5A20;
+  font-weight: 600;
+  font-size: 15px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  appearance: none;
+}
+.clearAllBtn:hover {
+  opacity: 0.8;
+}
+
+.autocompleteDropdown {
+  position: absolute;
+  top: 90px;
+  left: 0;
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+  border: 1px solid #E9EDF2;
+  z-index: 50;
+  overflow: hidden;
+}
+.autocompleteItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.autocompleteItem:hover {
+  background: #FFF5F0;
+}
+.autocompleteName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1F2937;
+}
+.autocompleteItem:hover .autocompleteName {
+  color: #EA4D1B;
+}
+.autocompleteDept {
+  font-size: 14px;
+  color: #6B7280;
+  margin-top: 2px;
+}
+.autocompleteBadge {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4B5563;
+  background: #F3F4F6;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+  border: 1px solid #E9EDF2;
+  z-index: 50;
+  min-width: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.dropdownItem {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  color: #374151;
+}
+.dropdownItem:hover {
+  background: #F9FAFB;
+}
+.dropdownItemActive {
+  background: #FFF5F0;
+  color: #EA4D1B;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .searchPanel {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .searchPanel {
+    padding: 20px 16px;
+  }
+  .searchInputWrapper {
+    height: 60px;
+    padding: 6px;
+  }
+  .searchIconContainer {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+  }
+  .searchIconContainer svg {
+    width: 22px;
+    height: 22px;
+  }
+  .searchInput {
+    font-size: 16px;
+    padding: 0 12px;
+  }
+  .searchButton {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    padding: 0;
+    font-size: 0;
+  }
+  .searchButton span {
+    display: none;
+  }
+  .shortcutBadge {
+    display: none;
+  }
+  .filterRow {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    gap: 12px;
+  }
+  .popularRow {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .filtersButton {
+    margin-left: 0;
+  }
+  .clearAllBtn {
+    margin-left: 0;
+    padding-right: 16px;
+  }
+}
