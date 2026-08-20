@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AppShell } from '@/components/layout/AppShell';
 import { HeroSearch } from '@/components/home/HeroSearch';
+import { FeatureSection } from '@/components/home/FeatureSection';
 
 export default function Home() {
   const router = useRouter();
@@ -117,52 +118,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section style={{ padding: '6rem 0', background: 'var(--bg-surface)', borderTop: '1px solid var(--border-light)' }}>
-        <div className="container max-w-[1200px] mx-auto text-center px-4">
-          <h2 className="font-extrabold text-[#1F2937] mb-3" style={{ fontSize: '2.5rem', letterSpacing: '-0.02em' }}>
-            Engineered for Seamless Campus Discovery
-          </h2>
-          <p className="text-gray-500 mb-12 mx-auto" style={{ fontSize: '1.125rem', maxWidth: '600px' }}>
-            Level up your university navigation experience with high fidelity tools crafted for Manipal University students.
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-            {/* Feature 1 */}
-            <div className="bg-white rounded-2xl p-8 hover-lift" style={{ border: '2px solid var(--muj-orange-light)', boxShadow: '0 10px 30px rgba(232, 97, 45, 0.05)' }}>
-              <div className="mb-6 flex items-center justify-center" style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--muj-orange-light)', color: 'var(--muj-orange)' }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              </div>
-              <h3 className="font-bold text-[#1F2937] mb-3" style={{ fontSize: '1.25rem' }}>Faculty Finder</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                Instant search across 500+ educators with smart fuzzy logic. Find contact, research, and schedule profiles in a click.
-              </p>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="bg-white rounded-2xl p-8 hover-lift" style={{ border: '1px solid var(--border-color)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
-              <div className="mb-6 flex items-center justify-center" style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--muj-orange-light)', color: 'var(--muj-orange)' }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-              </div>
-              <h3 className="font-bold text-[#1F2937] mb-3" style={{ fontSize: '1.25rem' }}>Campus Navigator</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                Detailed indoor routing diagrams and block directions to any faculty cabin. Map out exactly how to reach Academic Block 2, Floor 3.
-              </p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="bg-white rounded-2xl p-8 hover-lift" style={{ border: '1px solid var(--border-color)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
-              <div className="mb-6 flex items-center justify-center" style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--muj-orange-light)', color: 'var(--muj-orange)' }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-              </div>
-              <h3 className="font-bold text-[#1F2937] mb-3" style={{ fontSize: '1.25rem' }}>Live Status</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                Know when professors are in class, holding office hours, or available for consultation before taking the walk.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <FeatureSection />
     </AppShell>
   );
 }
