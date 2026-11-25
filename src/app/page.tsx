@@ -1,22 +1,33 @@
-'use client';
-
-import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { AppShell } from '@/components/layout/AppShell';
+import Image from 'next/image';
 import { HeroSearch } from '@/components/home/HeroSearch';
 import { FeatureSection } from '@/components/home/FeatureSection';
+import { filterOptions, toSummary } from '@/lib/faculty-utils';
+import { getFacultyList } from '@/lib/server/data';
+import campusBuilding from '../../public/campus-building.png';
 
-export default function Home() {
-  const router = useRouter();
+const floatingCard: React.CSSProperties = {
+  zIndex: 30, background: 'white', padding: '0.5rem', borderRadius: '12px', display: 'flex',
+  alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+};
+const floatingAvatar: React.CSSProperties = {
+  width: '28px', height: '28px', borderRadius: '50%', background: '#E5E7EB', display: 'flex',
+  alignItems: 'center', justifyContent: 'center', fontSize: '10px',
+};
+const liveDot: React.CSSProperties = { width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', marginLeft: '4px' };
+
+export default async function Home() {
+  const faculty = await getFacultyList();
+  // Photos aren't needed for search suggestions; leaving them out keeps the page lighter.
+  const searchable = faculty.map(f => ({ ...toSummary(f), photo: undefined }));
 
   return (
-    <AppShell>
+    <>
       {/* Hero Section */}
-      <section style={{ padding: '6rem 0', background: 'var(--bg-surface)' }}>
-        <div className="container max-w-[1200px] mx-auto px-4">
+      <section style={{ padding: 'clamp(3rem, 8vw, 6rem) 0', background: 'var(--bg-surface)' }}>
+        <div className="container" style={{ maxWidth: '1200px' }}>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            
+
             {/* Left Content */}
             <div className="flex flex-col items-start text-left">
               <div style={{
@@ -32,24 +43,24 @@ export default function Home() {
               }}>
                 MANIPAL UNIVERSITY JAIPUR SMART ASSISTANT
               </div>
-              
-              <h1 className="font-extrabold leading-tight mb-4 text-[#1F2937]" style={{ fontSize: '4rem', letterSpacing: '-0.02em' }}>
+
+              <h1 className="font-extrabold leading-tight mb-4" style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', letterSpacing: '-0.02em', color: '#1F2937' }}>
                 Find Any Faculty<br />at MUJ in <span style={{ color: 'var(--muj-orange)' }}>Seconds</span>
               </h1>
-              
-              <p className="text-gray-600 mb-8 leading-relaxed" style={{ fontSize: '1.125rem', maxWidth: '480px' }}>
+
+              <p className="mb-8 leading-relaxed" style={{ fontSize: '1.125rem', maxWidth: '480px', color: '#4B5563' }}>
                 Search faculty members, locate cabins, discover departments, and stay updated — all in one place. No more lost corridors or guessing cabin blocks.
               </p>
 
               <div className="flex flex-wrap items-center gap-4">
-                <Link href="/faculty" className="btn font-bold transition-transform hover:scale-105" style={{ 
+                <Link href="/faculty" className="btn font-bold" style={{
                   background: 'var(--muj-orange)', color: 'white', padding: '0.875rem 1.75rem', borderRadius: '8px',
                   boxShadow: '0 4px 14px rgba(232, 97, 45, 0.3)'
                 }}>
                   Search Faculty
                 </Link>
-                <Link href="/departments" className="btn font-bold transition-colors hover:bg-gray-50" style={{ 
-                  background: 'white', color: '#1F2937', padding: '0.875rem 1.75rem', borderRadius: '8px',
+                <Link href="/departments" className="btn btn-secondary font-bold" style={{
+                  color: '#1F2937', padding: '0.875rem 1.75rem', borderRadius: '8px',
                   border: '2px solid #1F2937'
                 }}>
                   Explore Departments
@@ -58,52 +69,58 @@ export default function Home() {
             </div>
 
             {/* Right Graphic */}
-            <div className="relative w-full h-[500px] rounded-3xl flex items-center justify-center animate-fade-in" style={{ background: '#FAFAFA' }}>
-              <img src="/campus-building.png" alt="Campus Building" style={{ width: '80%', height: 'auto', objectFit: 'contain' }} />
-              
+            <div className="relative w-full flex items-center justify-center animate-fade-in" style={{ background: '#FAFAFA', height: 'clamp(320px, 42vw, 500px)', borderRadius: '24px', overflow: 'hidden' }}>
+              <Image
+                src={campusBuilding}
+                alt="Illustration of a campus building"
+                preload
+                sizes="(min-width: 1024px) 470px, 80vw"
+                style={{ width: '80%', height: 'auto', maxHeight: '100%', objectFit: 'contain' }}
+              />
+
               {/* Flying Birds over the dome */}
-              <div className="bird-container bird-1">
+              <div className="bird-container bird-1" aria-hidden>
                 <svg className="bird-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B5563" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M2 12s4-4 10-2c6-2 10 2 10 2" />
                 </svg>
               </div>
-              <div className="bird-container bird-2">
+              <div className="bird-container bird-2" aria-hidden>
                 <svg className="bird-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M2 12s4-4 10-2c6-2 10 2 10 2" />
                 </svg>
               </div>
-              <div className="bird-container bird-3">
+              <div className="bird-container bird-3" aria-hidden>
                 <svg className="bird-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M2 12s4-4 10-2c6-2 10 2 10 2" />
                 </svg>
               </div>
 
-              {/* Floating Avatars (Mockup like screenshot) */}
-              <div className="absolute animate-float-card" style={{ zIndex: 30, top: '15%', left: '10%', background: 'white', padding: '0.5rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>👨‍🏫</div>
+              {/* Decorative floating cards */}
+              <div aria-hidden className="absolute animate-float-card" style={{ ...floatingCard, top: '15%', left: '10%' }}>
+                <div style={floatingAvatar}>👨‍🏫</div>
                 <div>
-                  <p className="text-[10px] font-bold text-gray-800">Dr. Arjun Singh</p>
-                  <p className="text-[8px] font-bold text-gray-500 flex items-center gap-1"><span style={{color: 'var(--muj-orange)'}}>📍</span> AB2-305 (CS)</p>
+                  <p style={{ fontSize: '10px', fontWeight: 700, color: '#1F2937' }}>Dr. Arjun Singh</p>
+                  <p className="flex items-center gap-1" style={{ fontSize: '8px', fontWeight: 700, color: '#6B7280' }}><span style={{ color: 'var(--muj-orange)' }}>📍</span> AB2-305 (CS)</p>
                 </div>
-                <div className="animate-pulse-ring" style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', marginLeft: '4px' }}></div>
+                <div className="animate-pulse-ring" style={liveDot}></div>
               </div>
 
-              <div className="absolute animate-float-card float-delay-1" style={{ zIndex: 30, bottom: '25%', left: '15%', background: 'white', padding: '0.5rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>👨‍🦳</div>
+              <div aria-hidden className="absolute animate-float-card float-delay-1" style={{ ...floatingCard, bottom: '25%', left: '15%' }}>
+                <div style={floatingAvatar}>👨‍🦳</div>
                 <div>
-                  <p className="text-[10px] font-bold text-gray-800">Dr. VK Kapoor</p>
-                  <p className="text-[8px] font-bold text-gray-500 flex items-center gap-1"><span style={{color: 'var(--muj-orange)'}}>📍</span> FOM-210</p>
+                  <p style={{ fontSize: '10px', fontWeight: 700, color: '#1F2937' }}>Dr. VK Kapoor</p>
+                  <p className="flex items-center gap-1" style={{ fontSize: '8px', fontWeight: 700, color: '#6B7280' }}><span style={{ color: 'var(--muj-orange)' }}>📍</span> FOM-210</p>
                 </div>
-                <div className="animate-pulse-ring" style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', marginLeft: '4px' }}></div>
+                <div className="animate-pulse-ring" style={liveDot}></div>
               </div>
 
-              <div className="absolute animate-float-card float-delay-2" style={{ zIndex: 30, top: '40%', right: '5%', background: 'white', padding: '0.5rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>👩‍🏫</div>
+              <div aria-hidden className="absolute animate-float-card float-delay-2" style={{ ...floatingCard, top: '40%', right: '5%' }}>
+                <div style={floatingAvatar}>👩‍🏫</div>
                 <div>
-                  <p className="text-[10px] font-bold text-gray-800">Dr. Priya Sharma</p>
-                  <p className="text-[8px] font-bold text-gray-500 flex items-center gap-1"><span style={{color: 'var(--muj-orange)'}}>📍</span> AB1-102 (ECE)</p>
+                  <p style={{ fontSize: '10px', fontWeight: 700, color: '#1F2937' }}>Dr. Priya Sharma</p>
+                  <p className="flex items-center gap-1" style={{ fontSize: '8px', fontWeight: 700, color: '#6B7280' }}><span style={{ color: 'var(--muj-orange)' }}>📍</span> AB1-102 (ECE)</p>
                 </div>
-                <div className="animate-pulse-ring" style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', marginLeft: '4px' }}></div>
+                <div className="animate-pulse-ring" style={liveDot}></div>
               </div>
             </div>
 
@@ -112,13 +129,13 @@ export default function Home() {
       </section>
 
       {/* Big Search Section */}
-      <section style={{ position: 'relative', overflow: 'hidden', width: '100%', display: 'flex', justifyContent: 'center', padding: '5rem 0 8rem', background: 'linear-gradient(180deg, #FAFAFA 0%, #F3F4F6 100%)' }}>
+      <section style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', padding: '5rem 0 8rem', background: 'linear-gradient(180deg, #FAFAFA 0%, #F3F4F6 100%)' }}>
         <div style={{ width: '100%', position: 'relative', zIndex: 10, padding: '0 1rem' }}>
-          <HeroSearch />
+          <HeroSearch faculty={searchable} options={filterOptions(faculty)} />
         </div>
       </section>
 
-      <FeatureSection />
-    </AppShell>
+      <FeatureSection facultyCount={faculty.length} />
+    </>
   );
 }

@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CabinMUJ
 
-## Getting Started
+Find any Manipal University Jaipur faculty member — and their block, floor and cabin — in seconds.
+Students search and browse; an admin keeps the data accurate.
 
-First, run the development server:
+## Quick start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # then fill in the admin username and password
+npm run dev                   # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Public site: `/`, `/faculty`, `/departments`, `/blocks`, `/report`, `/about`
+- Admin panel: `/admin` (sign in with the credentials from `.env.local`)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Configuration (`.env.local` or your host's environment)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `ADMIN_USERNAME`, `ADMIN_PASSWORD` | yes | Admin login. The username is case-insensitive. |
+| `ADMIN_SESSION_SECRET` | recommended | Signs the admin session cookie (`openssl rand -hex 32`). If unset, a random secret is generated and kept in `data/.session-secret`. Changing it signs everyone out. |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | no | Where students' "Email an update" messages go (default `cabinmuj@gmail.com`). |
+| `CABINMUJ_DATA_DIR` | no | Folder for the data file (default `./data`). |
 
-## Learn More
+Credentials are only ever read on the server; they are never sent to the browser. Keep them out of git
+(`.env*` files are ignored, except `.env.example`).
 
-To learn more about Next.js, take a look at the following resources:
+## Admin panel
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Dashboard** — totals, how many cabin locations are verified, pending student reports, recent changes.
+- **Faculty** — search/filter all faculty; add, edit or delete; one-click "mark location verified".
+  The editor warns about unsaved changes, detects edits made in another tab, flags likely duplicates,
+  and supports Ctrl/⌘ + S. Deleting can be undone (toast "Undo", or **History → Restore**).
+- **Requests** — reports students send from the update form. "Open in editor" shows the report next to
+  the record; saving resolves it. You can also reject/reopen, and reply to the student by email.
+- **History** — every change with before/after values.
+- **Download backup** — `/admin/export` returns all data as JSON.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Every admin page and server action verifies the session on the server. "Log out" signs the admin out on
+every device. Failed logins and public report submissions are rate-limited per address and site-wide (so
+faking an address doesn't help), and every input is validated on the server.
 
-## Deploy on Vercel
+## Data
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+All data lives in one JSON file, `data/cabinmuj-db.json` (faculty, student reports, change history).
+It is created on the first run from `src/lib/mock-data.ts`; after that **the admin panel is the source of
+truth** — edit faculty there, not in `mock-data.ts`. Each save is written atomically and the previous
+version is kept as `cabinmuj-db.json.bak`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> **Cabin locations in the seed data are placeholders.** `scrape_faculties.py` scraped names, designations,
+> departments and photos from the MUJ website but assigned block/floor/cabin **at random**. Every record
+> therefore starts as "unverified" (students see a notice). Use **Faculty → Location unverified** in the
+> admin panel to confirm or correct them. Re-running the script regenerates random cabins in
+> `mock-data.ts` (it does not touch the live data file).
+
+## Deploying
+
+The app needs a server with a **persistent, writable disk** for `data/` — e.g. a VPS, a Docker container
+with a volume, or a platform disk (Railway, Render, Fly.io):
+
+```bash
+npm ci && npm run build
+ADMIN_USERNAME=… ADMIN_PASSWORD=… ADMIN_SESSION_SECRET=… npm start
+```
+
+Run it as **one** server process (no cluster mode / multiple replicas): saves are serialized and rate limits
+are counted inside the process. If you put it behind a reverse proxy, have the proxy set `X-Real-IP` so
+per-address limits see real client addresses.
+
+Serverless hosts with read-only or ephemeral filesystems (such as Vercel) can serve the site, but admin
+saves would fail there (the admin sees a clear error). To host there, replace the storage in
+`src/lib/server/store.ts` with a database — it is the only file that touches storage.
+
+## Project structure
+
+```
+src/app/                 pages (public site, /admin, /admin/export)
+src/components/          UI (admin/, faculty/, home/, layout/, report/, ui/)
+src/lib/actions/         server actions (admin edits, public reports)
+src/lib/server/          storage, session/auth, validation, rate limiting (server-only)
+src/lib/                 shared types, search, formatting, mailto helpers
+```
+
+Scripts: `npm run dev`, `npm run build`, `npm start`, `npm run lint`.

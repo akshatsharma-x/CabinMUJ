@@ -1,29 +1,37 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { FacultyProvider } from '@/lib/FacultyContext';
+import { Navbar } from '@/components/layout/Navbar';
+import { Footer } from '@/components/layout/Footer';
+import { getAdminSession } from '@/lib/server/session';
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-inter", 
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
-  title: "CabinMUJ | Faculty Discovery Platform",
+  title: {
+    default: "CabinMUJ | Faculty Discovery Platform",
+    template: "%s | CabinMUJ",
+  },
   description: "Find your professors and their cabin locations at Manipal University Jaipur instantly.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getAdminSession();
   return (
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
-        <FacultyProvider>
-          {children}
-        </FacultyProvider>
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+          <Navbar isAdmin={Boolean(session)} />
+          <main style={{ flex: 1 }}>{children}</main>
+          <Footer />
+        </div>
       </body>
     </html>
   );

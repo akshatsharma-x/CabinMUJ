@@ -1,91 +1,66 @@
-'use client';
-
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { Faculty } from '@/lib/types';
+import type { FacultySummary } from '@/lib/types';
+import { formatLocation, hasLocation } from '@/lib/faculty-utils';
+import { Avatar } from './Avatar';
+import { CopyButton } from './CopyButton';
 
 interface FacultyCardProps {
-  faculty: Faculty;
+  faculty: FacultySummary;
 }
 
 export function FacultyCard({ faculty }: FacultyCardProps) {
-  const [copied, setCopied] = useState(false);
-  const initials = faculty.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-
-  const handleCopy = () => {
-    if (faculty.block && faculty.cabinNumber) {
-      navigator.clipboard.writeText(`${faculty.block} - Cabin ${faculty.cabinNumber}`);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
+  const located = hasLocation(faculty);
 
   return (
-    <div className="card hover-lift animate-fade-in" style={{ display: 'flex', flexDirection: 'column' }}>
+    <div className="card card-clickable hover-lift animate-fade-in" style={{ display: 'flex', flexDirection: 'column' }}>
       {/* Top Content */}
       <div className="p-5 flex gap-4 items-start flex-1">
-        {/* Avatar */}
-        <div style={{
-          width: '48px', height: '48px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0,
-          background: 'var(--bg-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center'
-        }}>
-          {faculty.photo ? (
-            <img src={faculty.photo} alt={faculty.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          ) : (
-            <span style={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.875rem' }}>{initials}</span>
-          )}
-        </div>
+        <Avatar name={faculty.name} photo={faculty.photo} size={48} />
 
-        {/* Info */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold truncate" style={{ fontSize: '0.9375rem' }}>{faculty.name}</h3>
-            {faculty.isHOD && (
-              <span className="badge badge-orange" style={{ flexShrink: 0 }}>HOD</span>
-            )}
+            <h3 className="font-semibold truncate" style={{ fontSize: '0.9375rem' }} title={faculty.name}>
+              {/* The link stretches over the whole card, so anywhere on it opens the profile. */}
+              <Link href={`/faculty/${faculty.id}`} className="stretched-link">{faculty.name}</Link>
+            </h3>
+            {faculty.isHOD && <span className="badge badge-orange shrink-0">HOD</span>}
           </div>
-          <p className="text-sm truncate" style={{ color: 'var(--text-muted)' }}>{faculty.designation}</p>
-          <p className="text-sm truncate" style={{ color: 'var(--text-secondary)', marginTop: '2px' }}>{faculty.department}</p>
+          <p className="text-sm truncate text-muted" title={faculty.designation}>{faculty.designation}</p>
+          <p className="text-sm truncate text-secondary" style={{ marginTop: '2px' }} title={faculty.department}>{faculty.department}</p>
         </div>
       </div>
 
       {/* Location + Actions */}
-      <div style={{ borderTop: '1px solid var(--border-light)', padding: '0.75rem 1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg-subtle)' }}>
-        {/* Location badges */}
-        <div className="flex items-center gap-2">
-          {faculty.block && faculty.cabinNumber ? (
+      <div style={{
+        borderTop: '1px solid var(--border-light)', padding: '0.75rem 1.25rem', display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between', gap: '0.5rem', background: 'var(--bg-subtle)', borderRadius: '0 0 var(--radius-lg) var(--radius-lg)',
+      }}>
+        <div className="flex items-center gap-2 min-w-0">
+          {located ? (
             <>
-              <span className="location-badge">{faculty.block}</span>
-              <span className="location-badge-outline">Cabin {faculty.cabinNumber}</span>
-              {faculty.floor && (
-                <span className="badge badge-gray" style={{ fontSize: '0.625rem' }}>{faculty.floor}</span>
-              )}
+              <span className="location-badge nowrap">{faculty.block}</span>
+              <span className="location-badge-outline nowrap">Cabin {faculty.cabinNumber}</span>
+              {faculty.floor && <span className="text-xs text-muted truncate">{faculty.floor}</span>}
             </>
           ) : (
             <span className="badge badge-gray">Location TBD</span>
           )}
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-2">
-          {faculty.block && faculty.cabinNumber && (
-            <button
-              onClick={handleCopy}
-              className="btn btn-sm"
+        <div className="flex items-center gap-1 shrink-0">
+          {located && (
+            <CopyButton
+              text={`${faculty.name} — ${formatLocation(faculty)}`}
+              label="📋"
+              copiedLabel="✓"
               title="Copy location"
-              style={{
-                padding: '0.25rem 0.5rem', fontSize: '0.75rem', borderRadius: '4px',
-                background: copied ? '#E6F9ED' : 'transparent',
-                color: copied ? '#1B8A3F' : 'var(--text-muted)',
-                border: 'none'
-              }}
-            >
-              {copied ? '✓' : '📋'}
-            </button>
+              className="btn btn-sm above-stretched"
+              style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', borderRadius: '4px', background: 'transparent', color: 'var(--text-muted)', border: 'none' }}
+              copiedStyle={{ background: '#E6F9ED', color: '#1B8A3F' }}
+            />
           )}
-          <Link href={`/faculty/${faculty.id}`} className="text-sm font-medium text-muj-orange" style={{ fontSize: '0.8125rem' }}>
-            View →
-          </Link>
+          <span aria-hidden className="text-sm font-medium text-muj-orange nowrap" style={{ fontSize: '0.8125rem' }}>View →</span>
         </div>
       </div>
     </div>
