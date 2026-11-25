@@ -1,7 +1,9 @@
 import 'server-only';
 import { cache } from 'react';
+import { cookies } from 'next/headers';
 import { connection } from 'next/server';
 import type { Faculty } from '@/lib/types';
+import { SESSION_COOKIE } from './session';
 import { readDb } from './store';
 
 /**
@@ -11,7 +13,9 @@ import { readDb } from './store';
  */
 export const getFacultyList = cache(async (): Promise<Faculty[]> => {
   await connection();
-  return (await readDb()).faculty;
+  // Admins always see their own edits immediately; students may get data up to ~10 s old (Redis only).
+  const admin = (await cookies()).has(SESSION_COOKIE);
+  return (await readDb({ maxAgeMs: admin ? 0 : undefined })).faculty;
 });
 
 export async function getFacultyById(id: string): Promise<Faculty | null> {

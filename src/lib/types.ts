@@ -108,7 +108,8 @@ export type HistoryAction =
   | 'unverified'
   | 'request-approved'
   | 'request-rejected'
-  | 'request-reopened';
+  | 'request-reopened'
+  | 'backup-restored';
 
 export interface FieldChange {
   field: string;

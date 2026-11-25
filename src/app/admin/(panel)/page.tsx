@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Form from 'next/form';
 import { HistoryList } from '@/components/admin/HistoryList';
+import { RestoreBackup } from '@/components/admin/RestoreBackup';
 import { formatDateTime, hasLocation } from '@/lib/faculty-utils';
 import { getAdminDb, toHistoryRows } from '@/lib/server/admin-data';
+import { storageInfo } from '@/lib/server/store';
 
 export const metadata: Metadata = { title: 'Dashboard' };
 
@@ -17,6 +19,7 @@ export default async function AdminDashboard() {
   const departments = new Set(db.faculty.map(f => f.department).filter(Boolean)).size;
   const verifiedPct = total ? Math.round((verified / total) * 100) : 0;
   const names = new Map(db.faculty.map(f => [f.id, f.name]));
+  const storage = storageInfo();
 
   return (
     <div className="container py-8">
@@ -30,6 +33,14 @@ export default async function AdminDashboard() {
           <button type="submit" className="btn btn-primary">Find</button>
         </Form>
       </div>
+
+      {!storage.writable && (
+        <div className="alert alert-error mb-6" role="alert">
+          <strong>Saving is turned off on this server:</strong> it has no writable storage ({storage.label}), so edits and
+          student reports can&apos;t be saved. On Vercel, connect <strong>Upstash Redis</strong> in your project&apos;s Storage tab and
+          redeploy — see README.
+        </div>
+      )}
 
       {verified === 0 && total > 0 && (
         <div className="alert alert-warning mb-6">
@@ -84,7 +95,6 @@ export default async function AdminDashboard() {
                 <span aria-hidden className="text-muted">→</span>
               </Link>
             ))}
-            <a href="/admin/export" className="btn btn-secondary">⬇ Download a backup of all data (JSON)</a>
           </div>
         </div>
 
@@ -114,6 +124,20 @@ export default async function AdminDashboard() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Data & backups */}
+      <div className="card p-5 mt-6 animate-fade-in delay-200">
+        <div className="flex flex-wrap justify-between items-start gap-3 mb-4">
+          <div>
+            <h2 className="h4">Data &amp; backups</h2>
+            <p className="text-xs text-muted mt-1">
+              Stored in: <strong>{storage.label}</strong>
+            </p>
+          </div>
+          <a href="/admin/export" className="btn btn-secondary">⬇ Download backup (JSON)</a>
+        </div>
+        <RestoreBackup currentFaculty={total} />
       </div>
 
       {/* Recent changes */}

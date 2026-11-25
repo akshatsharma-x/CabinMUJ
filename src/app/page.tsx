@@ -129,7 +129,8 @@ export default async function Home() {
       </section>
 
       {/* Big Search Section */}
-      <section style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', padding: '5rem 0 8rem', background: 'linear-gradient(180deg, #FAFAFA 0%, #F3F4F6 100%)' }}>
+      {/* zIndex keeps the search suggestions above the next section when they overflow into it */}
+      <section style={{ position: 'relative', zIndex: 20, width: '100%', display: 'flex', justifyContent: 'center', padding: '5rem 0 8rem', background: 'linear-gradient(180deg, #FAFAFA 0%, #F3F4F6 100%)' }}>
         <div style={{ width: '100%', position: 'relative', zIndex: 10, padding: '0 1rem' }}>
           <HeroSearch faculty={searchable} options={filterOptions(faculty)} />
         </div>

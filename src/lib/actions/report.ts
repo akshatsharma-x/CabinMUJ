@@ -23,7 +23,7 @@ export async function submitUpdateReport(raw: unknown): Promise<ReportResult> {
     { key: `report:${await clientIp()}`, limit: 6, windowMs: 10 * 60_000 },
     { key: 'report:all', limit: 40, windowMs: 10 * 60_000, global: true },
   ];
-  if (limitedFor(limits)) {
+  if (await limitedFor(limits)) {
     return { ok: false, formError: 'A lot of reports were sent in a short time. Please wait a few minutes, or email us instead.' };
   }
 
@@ -58,7 +58,7 @@ export async function submitUpdateReport(raw: unknown): Promise<ReportResult> {
     return { ok: false, formError: 'We could not save your report right now. Please try again, or email us instead.' };
   }
   if (result.ok) {
-    hit(limits);
+    await hit(limits);
     revalidatePath('/admin', 'layout');
   }
   return result;

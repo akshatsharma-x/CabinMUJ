@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { LoginForm } from '@/components/admin/LoginForm';
-import { getAdminSession, isAdminConfigured, safeAdminPath } from '@/lib/server/session';
+import { adminSetupProblem, getAdminSession, safeAdminPath } from '@/lib/server/session';
 
 export const metadata: Metadata = {
   title: 'Admin Login',
@@ -23,7 +23,7 @@ export default async function AdminLoginPage({ searchParams }: Props) {
           <h1 className="h3 mb-1">Admin sign in</h1>
           <p className="text-sm text-muted">Manage faculty information and student update requests.</p>
         </div>
-        <LoginForm next={destination} configured={isAdminConfigured()} />
+        <LoginForm next={destination} setupProblem={adminSetupProblem()} />
       </div>
     </div>
   );

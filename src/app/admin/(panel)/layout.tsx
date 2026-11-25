@@ -16,7 +16,7 @@ export default async function AdminPanelLayout({ children }: { children: React.R
   const session = await getAdminSession();
   if (!session) return <>{children}</>;
 
-  const pending = (await readDb()).requests.filter(r => r.status === 'Pending').length;
+  const pending = (await readDb({ maxAgeMs: 0 })).requests.filter(r => r.status === 'Pending').length;
 
   return (
     <ToastProvider>

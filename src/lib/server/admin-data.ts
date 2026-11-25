@@ -9,7 +9,7 @@ import { readDb, type Database } from './store';
 export async function getAdminDb(nextPath: string): Promise<{ username: string; db: Database }> {
   const { username } = await requireAdminPage(nextPath);
   await connection();
-  return { username, db: await readDb() };
+  return { username, db: await readDb({ maxAgeMs: 0 }) };
 }
 
 export interface EditorOptions {

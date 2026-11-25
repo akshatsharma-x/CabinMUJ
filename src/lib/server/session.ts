@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { dataDir, mutate, readDb } from './store';
+import { dataDir, mutate, readDb, storageKind } from './store';
 
 /**
  * Admin authentication.
@@ -16,7 +16,7 @@ import { dataDir, mutate, readDb } from './store';
  * HttpOnly cookie; every admin page and server action verifies it.
  */
 
-const SESSION_COOKIE = 'cabinmuj_admin';
+export const SESSION_COOKIE = 'cabinmuj_admin';
 const SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 
 let generatedSecret: string | null = null;
@@ -51,10 +51,29 @@ function storedSecret(): string {
   return (generatedSecret = fresh);
 }
 
+/**
+ * On Vercel (or any setup using Redis) there are many short-lived server instances and
+ * no shared disk, so a generated secret can't be kept — it must come from the environment.
+ */
+function secretMustBeConfigured(): boolean {
+  return Boolean(process.env.VERCEL) || storageKind() === 'redis';
+}
+
+/** What's missing for admin login to work, in plain words — or null if it's all set. */
+export function adminSetupProblem(): string | null {
+  const missing: string[] = [];
+  if (!process.env.ADMIN_USERNAME?.trim()) missing.push('ADMIN_USERNAME');
+  if (!process.env.ADMIN_PASSWORD) missing.push('ADMIN_PASSWORD');
+  if (!process.env.ADMIN_SESSION_SECRET && secretMustBeConfigured()) missing.push('ADMIN_SESSION_SECRET');
+  if (!missing.length) return null;
+  const where = process.env.VERCEL ? 'in your Vercel project (Settings → Environment Variables), then redeploy' : 'to .env.local (or the server environment) and restart';
+  return `Admin login isn't set up on this server yet: add ${missing.join(', ')} ${where}. See README.`;
+}
+
 function config() {
-  const username = process.env.ADMIN_USERNAME?.trim();
-  const password = process.env.ADMIN_PASSWORD;
-  if (!username || !password) return null;
+  if (adminSetupProblem()) return null;
+  const username = process.env.ADMIN_USERNAME!.trim();
+  const password = process.env.ADMIN_PASSWORD!;
   // Mixing the credentials into the key means changing the password signs everyone out.
   const secret = createHmac('sha256', process.env.ADMIN_SESSION_SECRET || storedSecret())
     .update(`${username}\u0000${password}`)
@@ -63,7 +82,7 @@ function config() {
 }
 
 export function isAdminConfigured(): boolean {
-  return config() !== null;
+  return adminSetupProblem() === null;
 }
 
 const sha256 = (s: string) => createHash('sha256').update(s, 'utf8').digest();
@@ -110,7 +129,8 @@ export const getAdminSession = cache(async (): Promise<{ username: string } | nu
   if (!token) return null;
   let validAfter = 0;
   try {
-    validAfter = (await readDb()).authValidAfter;
+    // Always fresh, so a logout on one server instance signs this session out everywhere at once.
+    validAfter = (await readDb({ maxAgeMs: 0 })).authValidAfter;
   } catch {
     // Unreadable data file: still allow signing in, so the admin can see what's wrong.
   }

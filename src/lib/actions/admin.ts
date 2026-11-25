@@ -4,9 +4,9 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import type { Faculty, FacultyFieldErrors, FacultyInput, FieldChange, HistoryEntry, UpdateRequestStatus } from '@/lib/types';
 import { formatLocation, plainName } from '@/lib/faculty-utils';
-import { checkCredentials, endSession, getAdminSession, isAdminConfigured, safeAdminPath, startSession } from '@/lib/server/session';
+import { adminSetupProblem, checkCredentials, endSession, getAdminSession, safeAdminPath, startSession } from '@/lib/server/session';
 import { clearClient, clientIp, hit, limitedFor, type Limit } from '@/lib/server/rate-limit';
-import { abort, mutate, newId, nextFacultyId, StorageError, type Database } from '@/lib/server/store';
+import { abort, mutate, newId, nextFacultyId, parseDatabase, StorageError, type Database } from '@/lib/server/store';
 import { validateFacultyInput } from '@/lib/server/validation';
 
 // Every action below re-checks the admin session itself: server actions are
@@ -43,9 +43,8 @@ function withParams(path: string, params: Record<string, string>): string {
 // ─── Login / logout ──────────────────────────────────────────────────────
 
 export async function login(input: { username?: unknown; password?: unknown; next?: unknown }): Promise<{ error: string }> {
-  if (!isAdminConfigured()) {
-    return { error: 'Admin login is not set up on this server: ADMIN_USERNAME and ADMIN_PASSWORD are missing (see README).' };
-  }
+  const setupProblem = adminSetupProblem();
+  if (setupProblem) return { error: setupProblem };
   const username = typeof input?.username === 'string' ? input.username : '';
   const password = typeof input?.password === 'string' ? input.password : '';
   if (!username.trim() || !password) return { error: 'Enter your username and password.' };
@@ -56,16 +55,16 @@ export async function login(input: { username?: unknown; password?: unknown; nex
     { key: clientKey, limit: 5, windowMs: 15 * 60_000 },
     { key: 'login:all', limit: 30, windowMs: 15 * 60_000, global: true },
   ];
-  const wait = limitedFor(limits);
+  const wait = await limitedFor(limits);
   if (wait) return { error: `Too many failed attempts. Try again in ${Math.ceil(wait / 60_000)} minute(s).` };
 
   const canonical = checkCredentials(username, password);
   if (!canonical) {
-    hit(limits);
+    await hit(limits);
     return { error: 'Incorrect username or password.' };
   }
 
-  clearClient(clientKey);
+  await clearClient(clientKey);
   await startSession(canonical);
   redirect(safeAdminPath(input?.next));
 }
@@ -363,4 +362,48 @@ export async function setRequestStatus(requestId: unknown, status: unknown): Pro
   }
   if (result.ok) refreshAll();
   return result;
+}
+
+// ─── Backups ─────────────────────────────────────────────────────────────
+
+const MAX_BACKUP_BYTES = 3.5 * 1024 * 1024; // stays under Vercel's 4.5 MB request limit
+
+/**
+ * Replaces all data with an uploaded backup (the JSON from "Download backup").
+ * Used to move data between servers (e.g. local → Vercel) and to recover from mistakes.
+ */
+export async function restoreBackup(formData: FormData): Promise<{ ok: true; faculty: number } | { ok: false; error: string }> {
+  const session = await getAdminSession();
+  if (!session) return { ok: false, error: SESSION_EXPIRED };
+
+  const file = formData instanceof FormData ? formData.get('backup') : null;
+  if (!(file instanceof File) || file.size === 0) return { ok: false, error: 'Choose a backup file (.json) first.' };
+  if (file.size > MAX_BACKUP_BYTES) return { ok: false, error: 'That file is too large to be a CabinMUJ backup.' };
+
+  let backup: Database;
+  try {
+    backup = parseDatabase(await file.text());
+  } catch (e) {
+    return { ok: false, error: `That file isn't a CabinMUJ backup (${(e as Error).message}).` };
+  }
+  if (backup.faculty.length === 0) return { ok: false, error: 'That backup contains no faculty, so nothing was changed.' };
+
+  try {
+    await mutate(db => {
+      db.faculty = backup.faculty;
+      db.requests = backup.requests;
+      db.history = backup.history;
+      db.seq = Math.max(db.seq, backup.seq);
+      // db.authValidAfter is kept: restoring must not bring back signed-out sessions.
+      log(db, {
+        by: session.username,
+        action: 'backup-restored',
+        summary: `Restored a backup: ${backup.faculty.length} faculty, ${backup.requests.length} reports, ${backup.history.length} history entries`,
+      });
+    });
+  } catch (e) {
+    return { ok: false, error: storageMessage(e) };
+  }
+  refreshAll();
+  return { ok: true, faculty: backup.faculty.length };
 }

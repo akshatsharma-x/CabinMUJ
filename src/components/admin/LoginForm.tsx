@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useTransition } from 'react';
+import { unstable_rethrow } from 'next/navigation';
 import { login } from '@/lib/actions/admin';
 
-export function LoginForm({ next, configured }: { next: string; configured: boolean }) {
+export function LoginForm({ next, setupProblem }: { next: string; setupProblem: string | null }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -22,7 +23,7 @@ export function LoginForm({ next, configured }: { next: string; configured: bool
           setPassword('');
         }
       } catch (err) {
-        if (isRedirect(err)) throw err;
+        unstable_rethrow(err); // the redirect after a successful sign-in
         setError('Could not reach the server. Check your connection and try again.');
       }
     });
@@ -30,11 +31,7 @@ export function LoginForm({ next, configured }: { next: string; configured: bool
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4 text-left" noValidate>
-      {!configured && (
-        <div className="alert alert-warning">
-          Admin login isn&apos;t configured on this server yet. Set <code>ADMIN_USERNAME</code> and <code>ADMIN_PASSWORD</code> in the environment (see README), then restart.
-        </div>
-      )}
+      {setupProblem && <div className="alert alert-warning">{setupProblem}</div>}
       {error && <div className="alert alert-error" role="alert">{error}</div>}
 
       <div className="field">
@@ -82,15 +79,9 @@ export function LoginForm({ next, configured }: { next: string; configured: bool
         </div>
       </div>
 
-      <button type="submit" className="btn btn-primary" disabled={pending || !configured} style={{ padding: '0.75rem', borderRadius: '8px', fontSize: '0.9375rem' }}>
+      <button type="submit" className="btn btn-primary" disabled={pending || Boolean(setupProblem)} style={{ padding: '0.75rem', borderRadius: '8px', fontSize: '0.9375rem' }}>
         {pending ? 'Signing in…' : 'Sign in'}
       </button>
     </form>
   );
-}
-
-/** Next.js signals redirect() with a special error; let it propagate so navigation happens. */
-function isRedirect(err: unknown): boolean {
-  const digest = (err as { digest?: unknown } | null)?.digest;
-  return typeof digest === 'string' && digest.startsWith('NEXT_REDIRECT');
 }

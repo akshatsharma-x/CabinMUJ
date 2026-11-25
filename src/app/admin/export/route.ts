@@ -7,7 +7,7 @@ export async function GET() {
   const session = await getAdminSession();
   if (!session) redirect(`/admin/login?next=${encodeURIComponent('/admin')}`);
 
-  const db = await readDb();
+  const db = await readDb({ maxAgeMs: 0 });
   const date = new Date().toISOString().slice(0, 10);
   const body = JSON.stringify(
     { exportedAt: new Date().toISOString(), exportedBy: session.username, ...db },
