@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { SiteAnalytics } from '@/components/layout/SiteAnalytics';
 import { getAdminSession } from '@/lib/server/session';
 
 const inter = Inter({
@@ -32,6 +33,7 @@ export default async function RootLayout({
           <main style={{ flex: 1 }}>{children}</main>
           <Footer />
         </div>
+        <SiteAnalytics />
       </body>
     </html>
   );
