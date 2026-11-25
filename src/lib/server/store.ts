@@ -198,9 +198,19 @@ function isAborted<T>(v: unknown): v is Aborted<T> {
 export type StorageKind = 'redis' | 'file';
 
 function redisCredentials(): { url: string; token: string } | null {
-  const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
-  return url && token ? { url, token } : null;
+  const env = process.env;
+  const url = env.UPSTASH_REDIS_REST_URL || env.KV_REST_API_URL;
+  const token = env.UPSTASH_REDIS_REST_TOKEN || env.KV_REST_API_TOKEN;
+  if (url && token) return { url, token };
+  // Vercel lets you choose a "Custom Prefix" when connecting Upstash (e.g. STORAGE_REST_API_URL).
+  // Accept any prefix, but only for a URL that really points at Upstash, plus its matching token.
+  for (const [key, value] of Object.entries(env)) {
+    const m = /^(.+)_(REST_API_URL|UPSTASH_REDIS_REST_URL)$/.exec(key);
+    if (!m || !value || !/^https:\/\/[^/]+\.upstash\.io(?:[/:]|$)/.test(value)) continue;
+    const tokenValue = env[`${m[1]}_${m[2] === 'REST_API_URL' ? 'REST_API_TOKEN' : 'UPSTASH_REDIS_REST_TOKEN'}`];
+    if (tokenValue) return { url: value, token: tokenValue };
+  }
+  return null;
 }
 
 export function storageKind(): StorageKind {
@@ -255,10 +265,22 @@ async function redisRead(maxAgeMs: number): Promise<Database> {
       return redisCache.db;
     }
     const [v, raw] = await redis.mget<[string | null, string | null]>(KEY_VERSION, KEY_DATA);
-    if (v === null || raw === null) {
-      // Empty database: seed it (if two servers race, one wins and the other reads its result).
+    if (raw === null) {
+      // No data: a brand-new database — or the data key was deleted (by hand in the Upstash
+      // console, or by eviction). Seed it, replacing whatever version is there; if two servers
+      // race, one wins and the other reads its result.
       const db = await seed();
-      return (await redisCompareAndSet(db, '0')) ? db : redisRead(0);
+      if (v !== null) {
+        console.error(`[cabinmuj] Redis key ${KEY_DATA} is missing (version ${v}); re-seeding. Restore your latest backup.`);
+        db.history.unshift({
+          id: newId('log'),
+          at: new Date().toISOString(),
+          by: 'system',
+          action: 'data-reset',
+          summary: 'The saved data was missing from Redis, so the original seed data was loaded. Restore your latest backup from the dashboard.',
+        });
+      }
+      return (await redisCompareAndSet(db, v === null ? '0' : String(v))) ? db : redisRead(0);
     }
     let db: Database;
     try {

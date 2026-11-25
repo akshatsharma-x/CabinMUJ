@@ -19,6 +19,7 @@ const ACTION_STYLE: Record<HistoryAction, { label: string; color: string }> = {
   'request-rejected': { label: 'Report rejected', color: '#B45309' },
   'request-reopened': { label: 'Report reopened', color: '#6B7280' },
   'backup-restored': { label: 'Backup restored', color: '#7C3AED' },
+  'data-reset': { label: 'Data reset — restore a backup', color: '#DC2626' },
 };
 
 export function HistoryList({ entries, existingIds, compact = false }: { entries: HistoryRow[]; existingIds: string[]; compact?: boolean }) {

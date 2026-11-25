@@ -98,8 +98,10 @@ truth** — edit faculty there, not in `mock-data.ts`. The dashboard shows where
 1. **Import the repository** at [vercel.com/new](https://vercel.com/new) — the Next.js defaults are fine.
 2. **Add the database:** in the project, open **Storage** → create an **Upstash for Redis** database on the
    free plan and connect it to this project (Vercel adds its connection settings automatically).
-   Tip: choose the **Mumbai** region, and set the project's function region to Mumbai (`bom1`) under
-   **Settings → Functions**, so pages load fast for students in India.
+   - Leave **Eviction off** — Redis is the app's database here, not a cache.
+   - When connecting, set **Custom Prefix** to `KV` (the app also recognizes other prefixes).
+   - Tip: choose the **Mumbai** region, and set the project's function region to Mumbai (`bom1`) under
+     **Settings → Functions**, so pages load fast for students in India.
 3. **Add environment variables** (**Settings → Environment Variables**): `ADMIN_USERNAME`,
    `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET` — you can paste those three lines from your `.env.local`.
 4. **Redeploy** (**Deployments → ⋯ → Redeploy**) so the new settings take effect.
